@@ -2,10 +2,22 @@ class AlertsController < ApplicationController
   before_action :find_alert, only: [:destroy]
 
   def index
+    render json: {
+      status: 200,
+      alerts: @current_user.alerts.as_json(
+        only: [
+          :id,
+          :coin_id,
+          :status,
+          :price,
+          :created_at
+        ]
+      )
+    }
   end
 
   def create
-    @alert = Alert.new(alert_params)
+    @alert = @current_user.alerts.new(alert_params)
     if @alert.save
       render json: {
         status: 201,
@@ -27,14 +39,13 @@ class AlertsController < ApplicationController
   private
 
   def find_alert
-    @alert = Alert.find(params[:id])
+    @alert = @current_user.alerts.find(params[:id])
   rescue ActiveRecord::RecordNotFound => e
     head :not_found
   end
 
   def alert_params
     params.permit(
-      :user_id,
       :coin_id,
       :price
     )
