@@ -138,3 +138,5 @@
 
 ## To visualize the DB schema, navigate to `db/schema.rb`
 ## All background processing implementation is in `FetchLatestCrptoPricesJob`
+## Dev testing screenshots
+<img width="1680" alt="Screenshot 2022-05-01 at 2 59 24 PM" src="https://user-images.githubusercontent.com/30936452/166142387-88fe544d-438c-40ad-b3ea-6e3f8539d80c.png">
