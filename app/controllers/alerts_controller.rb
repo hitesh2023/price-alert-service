@@ -1,4 +1,5 @@
 class AlertsController < ApplicationController
+  include AlertHelper
   before_action :find_alert, only: [:destroy]
 
   def index
@@ -23,6 +24,7 @@ class AlertsController < ApplicationController
   def create
     @alert = @current_user.alerts.new(alert_params)
     if @alert.save
+      store_alert_in_redis(@alert.coin_id, @alert.price, @alert.id)
       render json: {
         status: 201,
         alert: @alert.as_json(only: [:id, :coin_id, :price, :status])
@@ -38,6 +40,7 @@ class AlertsController < ApplicationController
   def destroy
     @alert.status = Alert.statuses['DELETED']
     if @alert.save
+      remove_alert_from_redis(@alert.coin_id, @alert.id)
       head :ok
     else
       head :internal_server_error

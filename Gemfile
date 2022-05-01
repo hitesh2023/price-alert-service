@@ -10,6 +10,7 @@ gem 'pry'
 gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
 gem 'simple_command'
+gem 'redis', '~> 4.6'
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
