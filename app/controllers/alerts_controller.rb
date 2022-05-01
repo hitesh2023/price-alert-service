@@ -1,6 +1,9 @@
 class AlertsController < ApplicationController
   before_action :find_alert, only: [:destroy]
 
+  def index
+  end
+
   def create
     @alert = Alert.new(alert_params)
     if @alert.save
@@ -30,6 +33,10 @@ class AlertsController < ApplicationController
   end
 
   def alert_params
-    params.permit(:user_id, :coin_id, :price)
+    params.permit(
+      :user_id,
+      :coin_id,
+      :price
+    )
   end
 end
