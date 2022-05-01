@@ -12,6 +12,7 @@ gem 'jwt'
 gem 'simple_command'
 gem 'redis', '~> 4.6'
 gem "sidekiq"
+gem "sidekiq-scheduler"
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end

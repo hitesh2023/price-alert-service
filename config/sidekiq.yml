@@ -4,3 +4,8 @@ production:
   :concurrency: 1
 :queues:
   - default
+:schedule:
+  FetchLatestCrptoPricesJob:
+    cron: '*/1 * * * *'
+    queue: default
+    enabled: true
