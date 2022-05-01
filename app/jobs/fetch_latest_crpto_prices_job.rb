@@ -26,13 +26,14 @@ class FetchLatestCrptoPricesJob < ApplicationJob
   def trigger_alert_to_users_subscribed_to_current_record(record)
     coin_id = record[:symbol].upcase
     redis_key = get_sorted_set_key_via_coin_id(coin_id)
-    alert_ids = REDIS.zrangebyscore(redis_key, record[:current_price], "+inf", :with_scores => true)
+    alert_ids = REDIS.zrangebyscore(redis_key, record[:current_price].to_f, "+inf", :with_scores => true)
+    print("**** Key: #{redis_key}, Current_price: #{record[:current_price].to_f}, AlertIDS: #{alert_ids}\n")
 
     alert_ids.each do |alert|
       alert_id, score = alert[0].to_i, alert[1].to_f
       alert = Alert.find(alert_id)
       if ['CREATED', 'FAILED'].include?(alert.status)
-        print("***Sending email alert to user: #{alert.user.email}, current_price: #{record[:current_price]}, stop_loss_price: #{score}***\n")
+        print("***Sending email alert for coin: #{coin_id} to user: #{alert.user.email}, current_price = #{record[:current_price]}, stop_loss_price = #{score}***\n")
         alert.status = Alert.statuses['TRIGGERED']
         remove_alert_from_redis(coin_id, alert_id)
       else
