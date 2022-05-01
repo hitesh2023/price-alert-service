@@ -2,9 +2,13 @@ class AlertsController < ApplicationController
   before_action :find_alert, only: [:destroy]
 
   def index
+    @alerts = @current_user.alerts
+    @alerts = @alerts.filter_by_statuses(params[:status].split(",")) if params[:status]
+    @alerts = @alerts.limit(params[:size]) if params[:size]
+
     render json: {
       status: 200,
-      alerts: @current_user.alerts.as_json(
+      alerts: @alerts.order('id desc').as_json(
         only: [
           :id,
           :coin_id,
@@ -32,14 +36,18 @@ class AlertsController < ApplicationController
   end
 
   def destroy
-    @alert.destroy!
-    head :no_content
+    @alert.status = Alert.statuses['DELETED']
+    if @alert.save
+      head :ok
+    else
+      head :internal_server_error
+    end
   end
 
   private
 
   def find_alert
-    @alert = @current_user.alerts.find(params[:id])
+    @alert = @current_user.alerts.non_deleted.find(params[:id])
   rescue ActiveRecord::RecordNotFound => e
     head :not_found
   end
