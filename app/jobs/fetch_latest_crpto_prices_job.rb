@@ -31,13 +31,14 @@ class FetchLatestCrptoPricesJob < ApplicationJob
     alert_ids.each do |alert|
       alert_id, score = alert[0].to_i, alert[1].to_f
       alert = Alert.find(alert_id)
-      if [Alert.statuses['CREATED'], Alert.statuses['FAILED']].include?(alert.status)
-        print("Sending email alert to user: #{alert.user.email}, current_price: #{record[:current_price]}, stop_loss_price: #{score}")
+      if ['CREATED', 'FAILED'].include?(alert.status)
+        print("***Sending email alert to user: #{alert.user.email}, current_price: #{record[:current_price]}, stop_loss_price: #{score}***\n")
         alert.status = Alert.statuses['TRIGGERED']
+        remove_alert_from_redis(coin_id, alert_id)
       else
+        print("***Failed to send email to user: current_status: #{alert.status}, current_price: #{record[:current_price]}, stop_loss_price: #{score}***\n")
         alert.status = Alert.statuses['FAILED']
       end
-      remove_alert_from_redis(redis_key, alert_id)
       alert.save!
     end
   end
